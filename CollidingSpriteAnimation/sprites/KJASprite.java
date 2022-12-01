@@ -1,6 +1,8 @@
 import java.awt.Image;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+
 import javax.imageio.ImageIO;
 
 public class KJASprite implements DisplayableSprite, MovableSprite, CollidingSprite {
@@ -14,10 +16,7 @@ private boolean dispose = false;
 private double velocityX = 0;
 private double velocityY = 0;
 
-public KJASprite(double x, double y) {
-}
-
-public KJASprite() {
+public KJASprite(double centerX, double centerY) {
 	
 	if (image == null) {
 		try {
@@ -108,10 +107,40 @@ public void setDispose(boolean dispose) {
 	this.dispose=dispose;
 }
 
+private boolean checkCollisionWithBarrier(ArrayList<DisplayableSprite> sprites, double deltaX, double deltaY) {
+	boolean colliding = false;
+
+	for (DisplayableSprite sprite : sprites) {
+		if (sprite instanceof BarrierSprite) {
+			if (CollisionDetection.overlaps(this.getMinX() + deltaX, this.getMinY() + deltaY, 
+					this.getMaxX()  + deltaX, this.getMaxY() + deltaY, 
+					sprite.getMinX(),sprite.getMinY(), 
+					sprite.getMaxX(), sprite.getMaxY())) {
+				colliding = true;
+				break;					
+			}
+		}
+	}		
+	return colliding;		
+}
+
+
 @Override
 public void update(Universe universe, KeyboardInput keyboard, long actual_delta_time) {
-	this.centerX += actual_delta_time * 0.001 * velocityX;
-	this.centerY += actual_delta_time * 0.001 * velocityY;
+	double deltaX = actual_delta_time * 0.001 * velocityX;
+	double deltaY = actual_delta_time * 0.001 * velocityY;
+	
+	boolean collidingBarrierX = checkCollisionWithBarrier(universe.getSprites(), deltaX, 0);
+	boolean collidingBarrierY = checkCollisionWithBarrier(universe.getSprites(), 0, deltaY);
+	
+	if (collidingBarrierX = false) {
+	this.centerX += deltaX;
+	}
+	if (collidingBarrierY = false) {
+	this.centerY += deltaY;
+	}
+	
+	
 }
 
 @Override
@@ -132,3 +161,4 @@ public boolean getIsAtExit() {
 	return false;
 }
 }
+
