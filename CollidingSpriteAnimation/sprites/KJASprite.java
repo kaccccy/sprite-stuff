@@ -15,6 +15,7 @@ private double height = 50;
 private boolean dispose = false;	
 private double velocityX = 0;
 private double velocityY = 0;
+private final double VELOCITY = 200;	
 
 public KJASprite(double centerX, double centerY) {
 	
@@ -124,19 +125,42 @@ private boolean checkCollisionWithBarrier(ArrayList<DisplayableSprite> sprites, 
 	return colliding;		
 }
 
+private boolean checkCollisionWithKJA(ArrayList<DisplayableSprite> sprites, double deltaX, double deltaY) {
+
+	//deltaX and deltaY represent the potential change in position
+	boolean colliding = false;
+
+	for (DisplayableSprite sprite : sprites) {
+		if (sprite instanceof KJASprite) {
+			
+			
+			if (CollisionDetection.pixelBasedOverlaps(this, sprite, deltaX, deltaY)) {
+				colliding = true;
+				break;					
+			}
+		}
+	}		
+	return colliding;		
+}
+
 
 @Override
 public void update(Universe universe, KeyboardInput keyboard, long actual_delta_time) {
+	
+	double velocityX = 0;
+	double velocityY = 0;
+	
 	double deltaX = actual_delta_time * 0.001 * velocityX;
 	double deltaY = actual_delta_time * 0.001 * velocityY;
-	
+
+	boolean collidingWithKJA = checkCollisionWithKJA(universe.getSprites(), deltaX, deltaY);
 	boolean collidingBarrierX = checkCollisionWithBarrier(universe.getSprites(), deltaX, 0);
 	boolean collidingBarrierY = checkCollisionWithBarrier(universe.getSprites(), 0, deltaY);
 	
-	if (collidingBarrierX = false) {
+	if (collidingBarrierX == false || collidingWithKJA == false) {
 	this.centerX += deltaX;
 	}
-	if (collidingBarrierY = false) {
+	if (collidingBarrierY == false || collidingWithKJA == false) {
 	this.centerY += deltaY;
 	}
 	

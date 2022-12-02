@@ -11,7 +11,6 @@ public class CollidingSpriteUniverse implements Universe {
 	private String status = "";
 
 	private final double VELOCITY = 200;	
-	
 	//	//require a separate list for sprites to be removed to avoid a concurence exception
 	private ArrayList<DisplayableSprite> disposalList = new ArrayList<DisplayableSprite>();
 
@@ -43,9 +42,7 @@ public class CollidingSpriteUniverse implements Universe {
 				else if (row == ROWS - 1 && col == COLS -1) {
 					sprites.add(new ExitSprite(minX - + COL_WIDTH / 2, minY - COL_WIDTH / 2, minX  + COL_WIDTH / 2, minX + ROW_HEIGHT / 2, true));
 				}
-				else if (row == (ROWS / 2) && col == (COLS / 2)) {
-					sprites.add(new OtherSprite(minX + COL_WIDTH / 2 + 8, minY + ROW_HEIGHT / 2 + 8));
-				}
+				
 				else {
 					//place a coin?
 					if (random.nextDouble() < COIN_FREQUENCY) {
@@ -121,7 +118,6 @@ public class CollidingSpriteUniverse implements Universe {
 		double velocityX = 0;
 		double velocityY = 0;
 		
-		//LEFT	
 		if (keyboard.keyDown(37)) {
 			velocityX = -VELOCITY;
 		}
@@ -137,6 +133,7 @@ public class CollidingSpriteUniverse implements Universe {
 		if (keyboard.keyDown(40)) {
 			velocityY += VELOCITY;			
 		}
+		//LEFT	
 		
 		for (int i = 0; i < sprites.size(); i++) {
 			DisplayableSprite sprite = sprites.get(i);
