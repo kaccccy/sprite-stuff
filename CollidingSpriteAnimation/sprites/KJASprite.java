@@ -16,9 +16,10 @@ public class KJASprite implements DisplayableSprite, MovableSprite, CollidingSpr
 	private double velocityX = 0;
 	private double velocityY = 0;
 	private final double VELOCITY = 200;
+	private final double PROXIMITY = 100;
 	private long score = 0;
 	private boolean isAtExit = false;
-	private String proximityMessage = "What a dubious fellow.";
+	private String proximityMessage = "";
 
 
 	public KJASprite(double centerX, double centerY) {
@@ -153,7 +154,8 @@ public class KJASprite implements DisplayableSprite, MovableSprite, CollidingSpr
 		boolean collidingWithKJA = checkCollisionWithKJA(universe.getSprites(), deltaX, deltaY);
 		boolean collidingBarrierX = checkCollisionWithBarrier(universe.getSprites(), deltaX, 0);
 		boolean collidingBarrierY = checkCollisionWithBarrier(universe.getSprites(), 0, deltaY);
-
+		boolean checkProximity = checkProximity(universe.getSprites());
+		
 		if (collidingBarrierX == false || collidingWithKJA == false) {
 			this.centerX += deltaX;
 		}
@@ -161,8 +163,13 @@ public class KJASprite implements DisplayableSprite, MovableSprite, CollidingSpr
 			this.centerY += deltaY;
 		}
 		
+		if (checkProximity == false) {
+			proximityMessage = "";
+		}
+		
 		checkCoversCoin(universe.getSprites(), deltaX, deltaY);
 		checkInExit(universe.getSprites(), deltaX, deltaY);
+		checkProximity(universe.getSprites());
 		
 	}
 
@@ -221,7 +228,7 @@ public class KJASprite implements DisplayableSprite, MovableSprite, CollidingSpr
 	private void checkInExit(ArrayList<DisplayableSprite> sprites, double deltaX, double deltaY) {
 		for (DisplayableSprite sprite : sprites) {
 			if (sprite instanceof ExitSprite) {				
-				if (CollisionDetection.inside(this, sprite)) {
+				if (CollisionDetection.inside(this, sprite) && score >= 1000) {
 					isAtExit = true;
 					break;					
 				}
@@ -230,6 +237,34 @@ public class KJASprite implements DisplayableSprite, MovableSprite, CollidingSpr
 			
 	}
 
+	private boolean checkProximity(ArrayList<DisplayableSprite> sprites) {
+		boolean inProximity = false;
+		for (DisplayableSprite sprite : sprites) {
+			if (sprite.getClass().toString().contains("OtherSprite")) {	
+				if (withinProximity(this, sprite) == true) {
+					proximityMessage = "1000 points to pass!";
+					inProximity = true;
+					break;
+				}
+			}
+		}
+		return inProximity;
+	}
+	
+	private boolean withinProximity(DisplayableSprite spriteA, DisplayableSprite spriteB) {
+		boolean inProximity = false;
+		
+		double a = spriteB.getCenterX() - spriteA.getCenterX();
+		double b = spriteB.getCenterY() - spriteA.getCenterY();
+		double c = Math.sqrt(Math.pow(a, 2) + Math.pow(b, 2));
+		
+		if (c <= PROXIMITY) {
+		inProximity = true;
+		}
+		return inProximity;
+	}
+	
+	
 	@Override
 	public long getScore() {
 		return score;
